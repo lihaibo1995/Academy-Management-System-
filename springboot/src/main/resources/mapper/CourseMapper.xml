@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lee.www.mapper.CourseMapper">
+
+
+    <delete id="deleteStudentCourse">
+        delete from student_course where student_id = #{studentId} and course_id = #{courseId}
+    </delete>
+
+    <insert id="setStudentCourse">
+        insert into student_course(student_id, course_id) values(#{studentId}, #{courseId})
+    </insert>
+
+    <select id="findPage" resultType="com.lee.www.entity.Course">
+        select course.*, sys_user.nickname as teacher from course
+        left join sys_user
+        on course.teacher_id = sys_user.id
+        <where>
+            <if test="name != null and name != ''">
+                and name like concat('%', #{name},'%')
+            </if>
+        </where>
+    </select>
+
+
+    <select id="findMyCourses" resultType="com.lee.www.entity.Course">
+        select course.*, sys_user.nickname as teacher from course
+        LEFT JOIN student_course  ON student_course.course_id = course.id
+        LEFT JOIN sys_user  ON course.teacher_id = sys_user.id
+        WHERE student_course.student_id = #{studentId}
+    </select>
+
+
+    <select id="findTeacherCourses" resultType="com.lee.www.entity.Course">
+        SELECT course.* ,sys_user.nickname AS teacher FROM course
+        LEFT JOIN sys_user  ON course.teacher_id = sys_user.id
+        WHERE course.teacher_id = #{teacherId}
+    </select>
+
+
+    <select id="findStudentCourse" resultType="java.lang.Integer">
+        SELECT count(student_course.course_id)
+        FROM student_course  WHERE student_id = #{studentId} AND course_id=#{courseId}
+    </select>
+
+
+</mapper>
